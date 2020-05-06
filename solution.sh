@@ -14,7 +14,7 @@ Host *
 EOF
 chmod 644 ~/.ssh/config
 
-# Wait for Vaults to be ready
+echo Wait 60s for Vaults to be ready
 sleep 60
 export VAULT_ADDR=http://localhost:8200
 
