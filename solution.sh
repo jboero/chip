@@ -8,6 +8,8 @@ terraform apply -auto-approve || exit
 
 export VAULT_ADDR=http://localhost:8200
 
+sleep 10
+
 # Tunnel, init, license all Vaults
 for v in Primary DR EU
 do
