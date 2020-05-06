@@ -42,7 +42,7 @@ jump Primary
 vault write -f sys/replication/dr/primary/enable
 sleep 20
 vault write -format=json sys/replication/dr/primary/secondary-token id="secondary" > dr.json
-drtoken=$(jq .wrapping_token dr.json)
+drtoken=$(jq .wrap_info.token dr.json)
 close
 
 jump DR
@@ -56,7 +56,7 @@ vault write -format=json sys/replication/performance/primary/secondary-token id=
 close
 
 jump EU
-prtoken=$(jq .wrapping_token pr.json)
+prtoken=$(jq .wrap_info.token pr.json)
 vault write sys/replication/performance/secondary/enable token="$prtoken"
 close
 
