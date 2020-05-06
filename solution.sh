@@ -30,9 +30,9 @@ function close(){
 # Tunnel, init, license all Vaults
 for v in Primary DR EU
 do
-  eval $(terraform output Jump_to_$1)
+  eval $(terraform output Jump_to_$v)
   vault operator init -format=json -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" >> vault.$v.json
-  export VAULT_TOKEN=$(jq -r .root_token vault.$1.json)
+  export VAULT_TOKEN=$(jq -r .root_token vault.$v.json)
   vault audit enable syslog
   vault write sys/license text="$VAULT_LICENSE"
   close
