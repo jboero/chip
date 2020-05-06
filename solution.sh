@@ -46,7 +46,7 @@ drtoken=$(jq -r .wrap_info.token dr.json)
 close
 
 jump DR
-vault write sys/replication/dr/secondary/enable token="$drtoken"
+vault write sys/replication/dr/secondary/enable token=$drtoken
 close
 
 jump Primary
@@ -57,7 +57,7 @@ close
 
 jump EU
 prtoken=$(jq -r .wrap_info.token pr.json)
-vault write sys/replication/performance/secondary/enable token="$prtoken"
+vault write sys/replication/performance/secondary/enable token=$prtoken
 close
 
 jump Primary
