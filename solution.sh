@@ -15,7 +15,7 @@ EOF
 chmod 644 ~/.ssh/config
 
 # Wait for Vaults to be ready
-sleep 40
+sleep 60
 export VAULT_ADDR=http://localhost:8200
 
 # Tunnel, init, license all Vaults
