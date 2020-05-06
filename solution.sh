@@ -8,23 +8,11 @@ terraform apply -auto-approve || exit
 
 export VAULT_ADDR=http://localhost:8200
 
-# Tunnel to primary and init.
-eval "echo yes | $(terraform output Jump_to_Primary)"
+# Tunnel, init, license all Vaults
+for v in Primary DR EU
+do
+eval "echo yes | $(terraform output Jump_to_$v)"
 vault operator init -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" -format="json" > vault.init.json
 vault write sys/license text="$VAULT_LICENSE"
-vault write -f sys/replication/dr/primary/enable
-vault write sys/replication/dr/primary/secondary-token id="secondary" -format="json" > seconary.json
 eval $(terraform output Jump_Close)
-
-# Tunnel to secondary and init
-eval $(terraform output Jump_to_DR)
-vault operator init -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" -format="json" > vaultDR.init.json
-vault write sys/license text="$VAULT_LICENSE"
-eval $(terraform output Jump_Close)
-
-# Tunnel to EU
-eval $(terraform output Jump_to_EU)
-vault operator init -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" -format="json" > vaultPR.init.json
-vault write sys/license text="$VAULT_LICENSE"
-eval $(terraform output Jump_Close)
-
+done
