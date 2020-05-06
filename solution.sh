@@ -32,6 +32,7 @@ for v in Primary DR EU
 do
   jump $v
   vault operator init -format=json -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" >> vault.$v.json
+  vault audit enable syslog
   vault write sys/license text="$VAULT_LICENSE"
   close
 done
@@ -58,3 +59,9 @@ prtoken=$(jq .wrapping_token pr.json)
 vault write sys/replication/performance/secondary/enable token="$prtoken"
 close
 
+jump Primary
+vault namespace create dev
+vault namespace create prod
+vault namespace create security
+vault auth enable userpass
+close
