@@ -19,12 +19,13 @@ echo Wait 60s for Vaults to be ready
 sleep 60
 export VAULT_ADDR=http://localhost:8200
 
-function jump()
-{
+function jump(){
     eval $(terraform output Jump_to_$1)
     export VAULT_TOKEN=$(jq -r .root_token vault.$1.json)
 }
-alias close='eval $(terraform output Jump_Close)'
+function close(){
+    eval $(terraform output Jump_Close)
+}
 
 # Tunnel, init, license all Vaults
 for v in Primary DR EU
