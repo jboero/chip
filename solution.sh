@@ -1,5 +1,6 @@
 #/bin/bash -x
 # John Boero - Note this will CD to the git repo but after it exits pwd will reset.
+echo Part 1: Deploy Vaults, initialise, license.
 git clone https://github.com/chrismatteson/terraform-vault-consul-deployment
 cd terraform-vault-consul-deployment/aws/examples/three_clusters_bastion_vpc_peering
 terraform init
@@ -37,6 +38,8 @@ do
   vault write sys/license text="$VAULT_LICENSE"
   close
 done
+
+echo PART 2: Set up replication.
 
 jump Primary
 vault write -f sys/replication/dr/primary/enable
