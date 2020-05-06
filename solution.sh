@@ -22,7 +22,7 @@ export VAULT_ADDR=http://localhost:8200
 for v in Primary DR EU
 do
   eval $(terraform output Jump_to_$v)
-  vault operator init -format=json -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" > vault.$v.json
+  vault operator init -format=json -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" >> vault.$v.json
   export VAULT_TOKEN=$(jq -r .root_token vault.$v.json)
   vault write sys/license text="$VAULT_LICENSE"
   eval $(terraform output Jump_Close)
