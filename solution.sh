@@ -15,8 +15,8 @@ Host *
 EOF
 chmod 644 ~/.ssh/config
 
-echo Wait 60s for Vaults to be ready
-sleep 60
+echo Wait 90s for Vaults to be ready
+sleep 90
 export VAULT_ADDR=http://localhost:8200
 
 function jump(){
