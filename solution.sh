@@ -18,12 +18,41 @@ echo Wait 60s for Vaults to be ready
 sleep 60
 export VAULT_ADDR=http://localhost:8200
 
+function jump()
+{
+    eval $(terraform output Jump_to_$1)
+    export VAULT_TOKEN=$(jq -r .root_token vault.$1.json)
+}
+alias close='eval $(terraform output Jump_Close)'
+
 # Tunnel, init, license all Vaults
 for v in Primary DR EU
 do
-  eval $(terraform output Jump_to_$v)
+  jump $v
   vault operator init -format=json -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" >> vault.$v.json
-  export VAULT_TOKEN=$(jq -r .root_token vault.$v.json)
   vault write sys/license text="$VAULT_LICENSE"
-  eval $(terraform output Jump_Close)
+  close
 done
+
+jump Primary
+vault write -f sys/replication/dr/primary/enable
+sleep 20
+vault write -format=json sys/replication/dr/primary/secondary-token id="secondary" > dr.json
+drtoken=$(jq .wrapping_token dr.json)
+close
+
+jump DR
+vault write sys/replication/dr/secondary/enable token="$drtoken"
+close
+
+jump Primary
+vault write -f sys/replication/performance/primary/enable
+sleep 20
+vault write -format=json sys/replication/performance/primary/secondary-token id=pr > pr.json
+close
+
+jump EU
+prtoken=$(jq .wrapping_token pr.json)
+vault write sys/replication/performance/secondary/enable token="$prtoken"
+close
+
