@@ -8,12 +8,20 @@ terraform apply -auto-approve || exit
 
 export VAULT_ADDR=http://localhost:8200
 
+# Disable host checking for ssh keys.
+mkdir -p ~/.ssh
+cat > ~/.ssh/config <<EOF
+Host *
+    StrictHostKeyChecking no
+EOF
+chmod 644 ~/.ssh/config
+
 sleep 10
 
 # Tunnel, init, license all Vaults
 for v in Primary DR EU
 do
-  eval "echo yes | $(terraform output Jump_to_$v)"
+  eval $(terraform output Jump_to_$v)
   vault operator init -format=json -recovery-shares=1 -recovery-threshold=1 -recovery-pgp-keys="keybase:hashicorpchip" > vault.$v.json
   export VAULT_TOKEN=$(jq .root_token vault.$v.json)
   vault write sys/license text="$VAULT_LICENSE"
